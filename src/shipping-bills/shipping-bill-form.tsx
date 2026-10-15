@@ -17,7 +17,6 @@ import { Popover, PopoverContent, PopoverTrigger } from 'ui/interactive/popover'
 import { PopoverContext } from 'ui/interactive/popover-context'
 import { Tabs, TabsList, TabsTrigger } from 'ui/interactive/tabs'
 import { clsx, getContext } from 'ui/utils'
-import { useDemoData } from './demo-store'
 import { shippingBillMockService } from './shipping-bill-mock-service'
 import { formOptionsMockService } from './form-options-mock-service'
 import type { FormOptionData } from './form-options-mock-service'
@@ -1079,7 +1078,8 @@ function DocumentItem({
 }
 
 function BillEditor({ bill }: { bill?: SavedBill }) {
-  const { exporters, businesses } = useDemoData()
+  const [exporters, setExporters] = useState<Exporter[]>([])
+  const [businesses, setBusinesses] = useState<Business[]>([])
   const [formOptions, setFormOptions] = useState<FormOptionData | null>(null)
   const [formOptionsError, setFormOptionsError] = useState<string | null>(null)
   const [formOptionsLoading, setFormOptionsLoading] = useState(true)
@@ -1088,10 +1088,15 @@ function BillEditor({ bill }: { bill?: SavedBill }) {
     setFormOptionsLoading(true)
     setFormOptionsError(null)
     try {
-      const options = await formOptionsMockService.getOptions()
+      const [options, directory] = await Promise.all([
+        formOptionsMockService.getOptions(),
+        partyMockService.getDirectory()
+      ])
       setFormOptions(options)
+      setExporters(directory.exporters)
+      setBusinesses(directory.businesses)
     } catch (error) {
-      setFormOptionsError(error instanceof Error ? error.message : 'Unable to load form options.')
+      setFormOptionsError(error instanceof Error ? error.message : 'Unable to load form data.')
     } finally {
       setFormOptionsLoading(false)
     }
@@ -1237,7 +1242,7 @@ function BillEditor({ bill }: { bill?: SavedBill }) {
   if (formOptionsLoading) {
     return (
       <div role="status" className="rounded-lg border border-gray-200 p-10 text-center text-sm text-gray-500">
-        Loading Shipping Bill form options...
+        Loading Shipping Bill form data...
       </div>
     )
   }
@@ -1245,8 +1250,8 @@ function BillEditor({ bill }: { bill?: SavedBill }) {
   if (formOptionsError || !formOptions) {
     return (
       <div role="alert" className="rounded-lg border border-red-200 bg-red-50 p-6 text-sm text-red-800">
-        <p className="font-medium">Shipping Bill form options could not be loaded.</p>
-        <p className="mt-1">{formOptionsError || 'No options were returned by the mock service.'}</p>
+        <p className="font-medium">Shipping Bill form data could not be loaded.</p>
+        <p className="mt-1">{formOptionsError || 'No data was returned by the mock service.'}</p>
         <Button className="mt-3" variant="outline" onClick={loadFormOptions}>Try again</Button>
       </div>
     )
