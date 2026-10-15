@@ -66,7 +66,7 @@ function validateSubmission(values: ShippingBillFormValues) {
         throw new Error(`Enter a unit price above zero for item ${itemIndex + 1} in invoice ${invoiceIndex + 1}.`)
       }
 
-      if (item.thirdPartyItem && item.itemThirdPartyId) {
+      if (item.thirdPartyItem) {
         const itemThirdParty = businesses.find(
           (party) => String(party.id) === item.itemThirdPartyId && party.isThirdParty
         )
