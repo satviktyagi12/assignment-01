@@ -252,7 +252,9 @@ function AsyncPartySelect({
             {loading ? (
               <div role="status" className="p-3 text-center text-xs text-gray-500">Searching mock service...</div>
             ) : optionsError ? (
-              <div role="alert" className="p-3 text-center text-xs text-red-600">Unable to load options. Change the search or try again.</div>
+              <div role="alert" className="p-3 text-center text-xs text-red-600">
+                Unable to load options. Change the search or try again.
+              </div>
             ) : options.length === 0 ? (
               <div className="p-3 text-center text-xs text-gray-400">No matching results found</div>
             ) : (
@@ -933,7 +935,17 @@ function InvoiceEditor({
   )
 }
 
-function DocumentItem({ formCtx, index, onRemove, formOptions }: { formCtx: BillFormContext; index: number; onRemove: () => void; formOptions: FormOptionData }) {
+function DocumentItem({
+  formCtx,
+  index,
+  onRemove,
+  formOptions
+}: {
+  formCtx: BillFormContext
+  index: number
+  onRemove: () => void
+  formOptions: FormOptionData
+}) {
   const { register, watch } = formCtx.hooks
   const documentValues = watch(`documents.${index}`)
 
@@ -1394,7 +1406,11 @@ function BillEditor({ bill }: { bill?: SavedBill }) {
                     />
                     <Input label="Gross weight" type="number" {...register('grossWeight')} />
                     <Input label="Net weight" type="number" {...register('netWeight')} />
-                    <Select<ShippingBillFormValues> label="Weight unit" name="measurementUnit" options={formOptions.weightUnits} />
+                    <Select<ShippingBillFormValues>
+                      label="Weight unit"
+                      name="measurementUnit"
+                      options={formOptions.weightUnits}
+                    />
                     <Input label="Total packages" type="number" {...register('totalPackages')} />
                     <Select<ShippingBillFormValues>
                       label="Marks and numbers"
@@ -1573,7 +1589,13 @@ function BillEditor({ bill }: { bill?: SavedBill }) {
                   </Button>
                 )}
                 {documents.map((field, index) => (
-                  <DocumentItem key={field.id} formCtx={formCtx} index={index} formOptions={formOptions} onRemove={() => removeDocument(index)} />
+                  <DocumentItem
+                    key={field.id}
+                    formCtx={formCtx}
+                    index={index}
+                    formOptions={formOptions}
+                    onRemove={() => removeDocument(index)}
+                  />
                 ))}
               </CardContent>
             </Card>
