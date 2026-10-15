@@ -48,4 +48,4 @@ Local storage is used to keep demo changes between reloads in the current browse
 
 ## AI Usage & Approach
 
-ChatGPT was used to assist with code review and implementation. The changes are kept focused on the existing form: extract validation from the UI, introduce an asynchronous mock-service boundary for list/draft/submit operations, make submission feedback explicit, and expose loading, empty, and error states where relevant. No dependencies were added. The implementation should be reviewed and validated with the build and lint commands above before submission.
+**Tool:** ChatGPT. **Use:** Assisted with architecture review and targeted implementation. **Judgment:** Kept the existing stack, avoided new dependencies, and separated reference data, validation, and mock service responsibilities. **Validation:** Reviewed the changes against the assignment requirements; run the build and lint commands above before submission.
