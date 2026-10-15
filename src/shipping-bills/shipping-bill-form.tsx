@@ -23,7 +23,7 @@ import { Popover, PopoverContent, PopoverTrigger } from 'ui/interactive/popover'
 import { PopoverContext } from 'ui/interactive/popover-context'
 import { Tabs, TabsList, TabsTrigger } from 'ui/interactive/tabs'
 import { clsx, getContext } from 'ui/utils'
-import { getDemoData, useDemoData } from './demo-store'
+import { useDemoData } from './demo-store'
 import { shippingBillMockService } from './shipping-bill-mock-service'
 import { billSchema } from './shipping-bill-validation'
 import { getMarksAndNumbersOptions, MarksAndNumbersOption } from './marks-and-numbers-source'
@@ -336,13 +336,7 @@ function PartyFields({
   onQuickAdd: () => void
 }) {
   const ownerId = formCtx.hooks.watch(ownerName)
-  const { exporters, businesses } = getDemoData()
-  const owner =
-    kind === 'exporter'
-      ? (exporters.find((party) => String(party.id) === ownerId) ??
-        parties.find((party) => String(party.id) === ownerId))
-      : (businesses.find((party) => String(party.id) === ownerId) ??
-        parties.find((party) => String(party.id) === ownerId))
+  const owner = parties.find((party) => String(party.id) === ownerId)
 
   useEffect(() => {
     const selectedBranch = formCtx.hooks.getValues(branchName)
@@ -1100,6 +1094,7 @@ function BillEditor({ bill }: { bill?: SavedBill }) {
   const { fields: licenses, append: addLicense, remove: removeLicense } = useFieldArray({ control, name: 'licenses' })
   const [activeTab, setActiveTab] = useState('details')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSavingDraft, setIsSavingDraft] = useState(false)
   const [draftId, setDraftId] = useState<number | undefined>(bill?.id)
   const [quickAdd, setQuickAdd] = useState<QuickAdd | null>(null)
   const [quickBranch, setQuickBranch] = useState<QuickBranch | null>(null)
@@ -1641,27 +1636,45 @@ function BillEditor({ bill }: { bill?: SavedBill }) {
               <Button
                 variant="outline"
                 type="button"
-                onClick={() => {
-                  const current = formCtx.hooks.getValues()
-                  const saved = saveBill(current, draftId)
-                  setDraftId(saved.id)
-                  setActiveTab(activeTab === 'documents' ? 'invoices' : 'details')
-                }}>
+                onClick={async () => {
+                  if (isSavingDraft) return
+                  setIsSavingDraft(true)
+                  try {
+                    const current = formCtx.hooks.getValues()
+                    const saved = await shippingBillMockService.saveDraft(current, draftId)
+                    setDraftId(saved.id)
+                    setActiveTab(activeTab === 'documents' ? 'invoices' : 'details')
+                  } catch {
+                    toast.error('Failed to save draft')
+                  } finally {
+                    setIsSavingDraft(false)
+                  }
+                }}
+                disabled={isSavingDraft}>
                 Previous
               </Button>
             )}
             {activeTab !== 'documents' ? (
               <Button
                 type="button"
-                onClick={(e) => {
+                onClick={async (e) => {
                   e.preventDefault()
-                  const current = formCtx.hooks.getValues()
-                  const saved = saveBill(current, draftId)
-                  setDraftId(saved.id)
-                  toast.success('Details saved')
-                  setActiveTab(activeTab === 'details' ? 'invoices' : 'documents')
-                }}>
-                Save & Next
+                  if (isSavingDraft) return
+                  setIsSavingDraft(true)
+                  try {
+                    const current = formCtx.hooks.getValues()
+                    const saved = await shippingBillMockService.saveDraft(current, draftId)
+                    setDraftId(saved.id)
+                    toast.success('Details saved')
+                    setActiveTab(activeTab === 'details' ? 'invoices' : 'documents')
+                  } catch {
+                    toast.error('Failed to save draft')
+                  } finally {
+                    setIsSavingDraft(false)
+                  }
+                }}
+                disabled={isSavingDraft}>
+                {isSavingDraft ? 'Saving...' : 'Save & Next'}
               </Button>
             ) : (
               <Button type="submit" disabled={isSubmitting}>
