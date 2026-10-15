@@ -1,6 +1,7 @@
 import { routes } from '@/shared/route-paths'
 import { invoiceTotal, SavedBill } from '@/shipping-bills/model'
 import { shippingBillService } from '@/shipping-bills/shipping-bill-service'
+import { shippingBillMockService } from '@/shipping-bills/shipping-bill-mock-service'
 import { navigate } from 'core/routing'
 import { toast } from 'core/toast-manager'
 import { useEffect, useState } from 'react'
@@ -14,18 +15,18 @@ export default function ListDashboard() {
   const [bills, setBills] = useState<SavedBill[]>(() => shippingBillService.getInitialBills())
   const [search, setSearch] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
   const [downloadingId, setDownloadingId] = useState<number | null>(null)
 
   const fetchBills = async () => {
     setIsLoading(true)
+    setLoadError(null)
     try {
-      const remoteBills = await shippingBillService.list()
-      if (remoteBills && remoteBills.length > 0) {
-        setBills(remoteBills)
-        toast.success(`Loaded ${remoteBills.length} shipping bills`)
-      }
-    } catch (err: any) {
-      console.warn('Backend API listing notice:', err)
+      const loadedBills = await shippingBillMockService.list()
+      setBills(loadedBills)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unable to load shipping bills.'
+      setLoadError(message)
     } finally {
       setIsLoading(false)
     }
@@ -132,7 +133,20 @@ export default function ListDashboard() {
               {filtered.length} {filtered.length === 1 ? 'bill' : 'bills'}
             </span>
           </div>
-          {filtered.length ? (
+          {loadError && (
+            <div role="alert" className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+              <p className="font-medium">Shipping bills could not be loaded.</p>
+              <p className="mt-1">{loadError}</p>
+              <Button className="mt-3" variant="outline" size="sm" onClick={fetchBills} disabled={isLoading}>
+                Try again
+              </Button>
+            </div>
+          )}
+          {isLoading && bills.length === 0 ? (
+            <div role="status" className="rounded-lg border border-gray-200 p-10 text-center text-sm text-gray-500">
+              Loading shipping bills...
+            </div>
+          ) : filtered.length ? (
             <Table>
               <thead>
                 <tr>
