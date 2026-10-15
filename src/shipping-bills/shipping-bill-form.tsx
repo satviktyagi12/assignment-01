@@ -1503,11 +1503,7 @@ function BillEditor({ bill }: { bill?: SavedBill }) {
                         <Select<ShippingBillFormValues>
                           label="Size"
                           name={`containers.${index}.containerSize`}
-                          options={[
-                            { value: '20', label: '20 ft' },
-                            { value: '40', label: '40 ft' },
-                            { value: '45', label: '45 ft' }
-                          ]}
+                          options={formOptions.containerSizes}
                           placeholder="Select size"
                         />
                         <Input label="Seal number" {...register(`containers.${index}.exciseSealNumber`)} />
@@ -1515,11 +1511,7 @@ function BillEditor({ bill }: { bill?: SavedBill }) {
                         <Select<ShippingBillFormValues>
                           label="Seal type"
                           name={`containers.${index}.sealType`}
-                          options={[
-                            { value: 1, label: 'BTSL - Bottle Seal' },
-                            { value: 2, label: 'ESEAL - Electronic Seal' },
-                            { value: 3, label: 'RFID - Radio Frequency Identifier' }
-                          ]}
+                          options={formOptions.containerSealTypes}
                           placeholder="Select if needed"
                         />
                         <Input label="Seal device ID" {...register(`containers.${index}.sealDeviceId`)} />
