@@ -6,7 +6,7 @@ import { Trades } from '@/data/trade-agrements'
 import { cargoOptions, contractTypes, paymentTypes, priceInclusionTypes, sealTypes, weightUnits } from '@/data/types'
 import { BranchDialog, PartyDialog } from './party-dialogs'
 import { routes } from '@/shared/route-paths'
-import { s, useFieldArray, useForm } from 'core/form'
+import { useFieldArray, useForm } from 'core/form'
 import { Form, SubmitButton } from 'core/form/components'
 import { navigate, useParams } from 'core/routing'
 import { toast } from 'core/toast-manager'
@@ -23,8 +23,9 @@ import { Popover, PopoverContent, PopoverTrigger } from 'ui/interactive/popover'
 import { PopoverContext } from 'ui/interactive/popover-context'
 import { Tabs, TabsList, TabsTrigger } from 'ui/interactive/tabs'
 import { clsx, getContext } from 'ui/utils'
-import { getDemoData, saveBill, useDemoData } from './demo-store'
-import { shippingBillService } from './shipping-bill-service'
+import { getDemoData, useDemoData } from './demo-store'
+import { shippingBillMockService } from './shipping-bill-mock-service'
+import { billSchema } from './shipping-bill-validation'
 import { getMarksAndNumbersOptions, MarksAndNumbersOption } from './marks-and-numbers-source'
 import {
   BillInvoiceForm,
@@ -44,56 +45,6 @@ import {
 } from './model'
 import { partyMockService } from './party-mock-service'
 import { workflowSteps } from './workflow'
-
-const positive = s.string().refine((value) => (Number(value) > 0 ? undefined : 'Enter a number above zero'))
-
-// Leaf names are deliberate: fe-zen-arch resolves nested RHF field rules by their final path segment.
-const billSchema = s.object({
-  jobNumber: s.string().optional(),
-  jobDate: s.string(),
-  exporterId: s.string(),
-  exporterBranchId: s.string(),
-  consigneeId: s.string(),
-  consigneeBranchId: s.string(),
-  loadingPort: s.string(),
-  finalDestinationPort: s.string(),
-  dischargePort: s.string().optional(),
-  originStateCode: s.string().optional(),
-  nfeiCategory: s.string().optional(),
-  rbiWaiverNumber: s.string().optional(),
-  rbiWaiverDate: s.string().optional(),
-  sealType: s.string().optional(),
-  numberOfContainers: s.string().optional(),
-  natureOfCargo: s.string().optional(),
-  grossWeight: s.string().optional(),
-  netWeight: s.string().optional(),
-  measurementUnit: s.string().optional(),
-  totalPackages: s.string().optional(),
-  marksAndNumbers: s.string().optional(),
-  loosePackets: s.string().optional(),
-  mawbNumber: s.string().optional(),
-  hawbNumber: s.string().optional(),
-  invoiceNumber: s.string(),
-  invoiceDate: s.string(),
-  currency: s.string(),
-  invoiceTotal: s.string().refine((value) => (!value || Number(value) >= 0 ? undefined : 'Total cannot be negative')).optional(),
-  contractType: s.string(),
-  buyerId: s.string().optional(),
-  buyerBranchId: s.string().optional(),
-  thirdPartyId: s.string().optional(),
-  thirdPartyBranchId: s.string().optional(),
-  ritcCode: s.string(),
-  goodsDescription1: s.string(),
-  quantity: positive,
-  unitOfMeasurement: s.string(),
-  unitPrice: positive,
-  containerNumber: s.string().optional(),
-  packingNumberFrom: s.string().optional(),
-  packingNumberTo: s.string().optional(),
-  documentTypeCode: s.string().optional(),
-  documentReferenceNumber: s.string().optional(),
-  registrationNumber: s.string().optional()
-})
 
 type BillFormContext = ReturnType<typeof useForm<ShippingBillFormValues>>
 
@@ -1148,6 +1099,7 @@ function BillEditor({ bill }: { bill?: SavedBill }) {
   } = useFieldArray({ control, name: 'documents' })
   const { fields: licenses, append: addLicense, remove: removeLicense } = useFieldArray({ control, name: 'licenses' })
   const [activeTab, setActiveTab] = useState('details')
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [draftId, setDraftId] = useState<number | undefined>(bill?.id)
   const [quickAdd, setQuickAdd] = useState<QuickAdd | null>(null)
   const [quickBranch, setQuickBranch] = useState<QuickBranch | null>(null)
@@ -1215,24 +1167,19 @@ function BillEditor({ bill }: { bill?: SavedBill }) {
   }, [formState.submitCount, formState.errors])
 
   async function handleSave(data: ShippingBillFormValues) {
+    if (isSubmitting) return
+
+    setIsSubmitting(true)
     try {
-      const saved = saveBill(data, draftId)
+      const saved = await shippingBillMockService.submit(data, draftId)
       setDraftId(saved.id)
-      console.log('Shipping bill save payload', saved.payload)
-
-      // Submit payload to backend API (POST /api/shipping-bills from shipping_bill.http)
-      try {
-        const apiResult = await shippingBillService.upsert(data)
-        console.log('API response from POST /api/shipping-bills:', apiResult)
-      } catch (apiErr) {
-        console.log('Backend API sync notice (saved locally):', apiErr)
-      }
-
       toast.success(bill ? 'Shipping bill updated' : 'Shipping bill created')
       navigate(routes.toShippingBillEdit(saved.id))
-    } catch (err: any) {
-      console.error('Error saving shipping bill:', err)
-      toast.error('Failed to save shipping bill')
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to save shipping bill'
+      toast.error(message)
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -1717,8 +1664,8 @@ function BillEditor({ bill }: { bill?: SavedBill }) {
                 Save & Next
               </Button>
             ) : (
-              <Button type="submit">
-                Save changes
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Saving...' : 'Save changes'}
               </Button>
             )}
           </div>
