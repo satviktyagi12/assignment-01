@@ -4,7 +4,7 @@ import { shippingBillService } from '@/shipping-bills/shipping-bill-service'
 import { shippingBillMockService } from '@/shipping-bills/shipping-bill-mock-service'
 import { navigate } from 'core/routing'
 import { toast } from 'core/toast-manager'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Badge } from 'ui/basic/badge'
 import { Button } from 'ui/basic/button'
 import { Card, CardContent } from 'ui/basic/card'
@@ -12,13 +12,13 @@ import { Table } from 'ui/basic/table'
 import { Input } from 'ui/inputs/input'
 
 export default function ListDashboard() {
-  const [bills, setBills] = useState<SavedBill[]>(() => shippingBillService.getInitialBills())
+  const [bills, setBills] = useState<SavedBill[]>([])
   const [search, setSearch] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [downloadingId, setDownloadingId] = useState<number | null>(null)
 
-  const fetchBills = async () => {
+  const fetchBills = useCallback(async () => {
     setIsLoading(true)
     setLoadError(null)
     try {
@@ -30,11 +30,11 @@ export default function ListDashboard() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
-    fetchBills()
-  }, [])
+    void fetchBills()
+  }, [fetchBills])
 
   const handleDownloadFlatFile = async (bill: SavedBill) => {
     try {
