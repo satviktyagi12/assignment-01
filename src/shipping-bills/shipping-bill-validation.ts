@@ -31,7 +31,10 @@ const billSchema = s.object({
   invoiceNumber: s.string(),
   invoiceDate: s.string(),
   currency: s.string(),
-  invoiceTotal: s.string().refine((value) => (!value || Number(value) >= 0 ? undefined : 'Total cannot be negative')).optional(),
+  invoiceTotal: s
+    .string()
+    .refine((value) => (!value || Number(value) >= 0 ? undefined : 'Total cannot be negative'))
+    .optional(),
   contractType: s.string(),
   buyerId: s.string().optional(),
   buyerBranchId: s.string().optional(),
@@ -49,6 +52,5 @@ const billSchema = s.object({
   documentReferenceNumber: s.string().optional(),
   registrationNumber: s.string().optional()
 })
-
 
 export { billSchema }
