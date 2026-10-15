@@ -136,6 +136,11 @@ export const shippingBillMockService = {
     }))
   },
 
+  async getById(id: string | number): Promise<SavedBill | undefined> {
+    const bills = await shippingBillMockService.list()
+    return bills.find((bill) => String(bill.id) === String(id))
+  },
+
   async saveDraft(values: ShippingBillFormValues, id?: number): Promise<SavedBill> {
     await delay(undefined)
     return saveBill(values, id)
