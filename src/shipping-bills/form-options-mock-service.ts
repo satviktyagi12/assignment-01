@@ -3,14 +3,7 @@ import { quantityCodes } from '@/data/quantity-code'
 import schemeCodes from '@/data/scheme-codes'
 import { stateOptions } from '@/data/states'
 import { Trades } from '@/data/trade-agrements'
-import {
-  cargoOptions,
-  contractTypes,
-  paymentTypes,
-  priceInclusionTypes,
-  sealTypes,
-  weightUnits
-} from '@/data/types'
+import { cargoOptions, contractTypes, paymentTypes, priceInclusionTypes, sealTypes, weightUnits } from '@/data/types'
 import { ports } from './model'
 
 export interface FormOptionData {

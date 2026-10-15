@@ -1,4 +1,3 @@
-import { BranchDialog, PartyDialog } from './party-dialogs'
 import { routes } from '@/shared/route-paths'
 import { useFieldArray, useForm } from 'core/form'
 import { Form } from 'core/form/components'
@@ -6,9 +5,9 @@ import { navigate, useParams } from 'core/routing'
 import { toast } from 'core/toast-manager'
 import { RrCaretDown } from 'icons/rr/fi-rr-caret-down'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { getFormContext, RegisterOptions, useController } from 'ui/form'
 import { Button } from 'ui/basic/button'
 import { Card, CardContent, CardHeader } from 'ui/basic/card'
+import { getFormContext, RegisterOptions, useController } from 'ui/form'
 import { Checkbox } from 'ui/inputs/checkbox'
 import { InputError } from 'ui/inputs/error'
 import { Input } from 'ui/inputs/input'
@@ -17,10 +16,8 @@ import { Popover, PopoverContent, PopoverTrigger } from 'ui/interactive/popover'
 import { PopoverContext } from 'ui/interactive/popover-context'
 import { Tabs, TabsList, TabsTrigger } from 'ui/interactive/tabs'
 import { clsx, getContext } from 'ui/utils'
-import { shippingBillMockService } from './shipping-bill-mock-service'
-import { formOptionsMockService } from './form-options-mock-service'
 import type { FormOptionData } from './form-options-mock-service'
-import { billSchema } from './shipping-bill-validation'
+import { formOptionsMockService } from './form-options-mock-service'
 import { getMarksAndNumbersOptions, MarksAndNumbersOption } from './marks-and-numbers-source'
 import {
   BillInvoiceForm,
@@ -37,7 +34,10 @@ import {
   SavedBill,
   ShippingBillFormValues
 } from './model'
+import { BranchDialog, PartyDialog } from './party-dialogs'
 import { partyMockService } from './party-mock-service'
+import { shippingBillMockService } from './shipping-bill-mock-service'
+import { billSchema } from './shipping-bill-validation'
 import { workflowSteps } from './workflow'
 
 type BillFormContext = ReturnType<typeof useForm<ShippingBillFormValues>>
@@ -166,7 +166,8 @@ function AsyncPartySelect({
     let active = true
     if (value) {
       if (getInitialLabelRef.current) {
-        void getInitialLabelRef.current(String(value))
+        void getInitialLabelRef
+          .current(String(value))
           .then((label) => {
             if (active && label) setSelectedLabel(label)
           })
@@ -220,10 +221,7 @@ function AsyncPartySelect({
   return (
     <div>
       <input type="hidden" name={name} value={value ?? ''} ref={ref} disabled={disabled} />
-      <Popover
-        placement="bottom-start"
-        fallbackPlacements={['top-start']}
-        onOpenCallback={(open) => setIsOpen(open)}>
+      <Popover placement="bottom-start" fallbackPlacements={['top-start']} onOpenCallback={(open) => setIsOpen(open)}>
         <PopoverTrigger
           className={clsx(
             'outline-focus-select group flex w-full cursor-pointer items-center justify-between rounded border border-gray-200 pr-2 hover:border-gray-300 disabled:cursor-not-allowed disabled:opacity-50',
@@ -252,7 +250,9 @@ function AsyncPartySelect({
           </div>
           <div className="max-h-56 overflow-y-auto p-1">
             {loading ? (
-              <div role="status" className="p-3 text-center text-xs text-gray-500">Searching mock service...</div>
+              <div role="status" className="p-3 text-center text-xs text-gray-500">
+                Searching mock service...
+              </div>
             ) : optionsError ? (
               <div role="alert" className="p-3 text-center text-xs text-red-600">
                 Unable to load options. Change the search or try again.
@@ -325,11 +325,11 @@ function PartyFields({
 }: {
   formCtx: BillFormContext
   ownerName:
-  | 'exporterId'
-  | 'consigneeId'
-  | `invoices.${number}.buyerId`
-  | `invoices.${number}.thirdPartyId`
-  | `invoices.${number}.items.${number}.itemThirdPartyId`
+    | 'exporterId'
+    | 'consigneeId'
+    | `invoices.${number}.buyerId`
+    | `invoices.${number}.thirdPartyId`
+    | `invoices.${number}.items.${number}.itemThirdPartyId`
   branchName: BranchPath
   label: string
   kind: 'exporter' | 'business'
@@ -1252,7 +1252,9 @@ function BillEditor({ bill }: { bill?: SavedBill }) {
       <div role="alert" className="rounded-lg border border-red-200 bg-red-50 p-6 text-sm text-red-800">
         <p className="font-medium">Shipping Bill form data could not be loaded.</p>
         <p className="mt-1">{formOptionsError || 'No data was returned by the mock service.'}</p>
-        <Button className="mt-3" variant="outline" onClick={loadFormOptions}>Try again</Button>
+        <Button className="mt-3" variant="outline" onClick={loadFormOptions}>
+          Try again
+        </Button>
       </div>
     )
   }
@@ -1278,12 +1280,13 @@ function BillEditor({ bill }: { bill?: SavedBill }) {
           return (
             <div
               key={step.id}
-              className={`rounded-lg border p-3 ${isShippingBill
-                ? 'border-primary-300 bg-primary-50'
-                : 'border-gray-200 bg-gray-50'
-                }`}>
+              className={`rounded-lg border p-3 ${
+                isShippingBill ? 'border-primary-300 bg-primary-50' : 'border-gray-200 bg-gray-50'
+              }`}>
               <div className="flex items-center gap-2 text-sm font-medium">
-                <span className="flex size-6 items-center justify-center rounded-full bg-white text-xs">{index + 1}</span>
+                <span className="flex size-6 items-center justify-center rounded-full bg-white text-xs">
+                  {index + 1}
+                </span>
                 {step.title}
               </div>
               <p className="ml-8 text-xs text-gray-500">{step.description}</p>

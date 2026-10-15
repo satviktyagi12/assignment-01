@@ -15,9 +15,7 @@ function validateSubmission(values: ShippingBillFormValues) {
     throw new Error('Select a valid exporter and one of its branches before submitting.')
   }
 
-  const consignee = businesses.find(
-    (party) => String(party.id) === values.consigneeId && party.isConsignee
-  )
+  const consignee = businesses.find((party) => String(party.id) === values.consigneeId && party.isConsignee)
   if (!consignee || !consignee.branches.some((branch) => String(branch.id) === values.consigneeBranchId)) {
     throw new Error('Select a valid consignee and one of its branches before submitting.')
   }
@@ -64,18 +62,14 @@ function validateSubmission(values: ShippingBillFormValues) {
     }
 
     if (!invoice.buyerSameAsConsignee) {
-      const buyer = businesses.find(
-        (party) => String(party.id) === invoice.buyerId && party.isBuyer
-      )
+      const buyer = businesses.find((party) => String(party.id) === invoice.buyerId && party.isBuyer)
       if (!buyer || !buyer.branches.some((branch) => String(branch.id) === invoice.buyerBranchId)) {
         throw new Error(`Select a valid buyer and branch for invoice ${invoiceIndex + 1}.`)
       }
     }
 
     if (invoice.thirdPartyId) {
-      const thirdParty = businesses.find(
-        (party) => String(party.id) === invoice.thirdPartyId && party.isThirdParty
-      )
+      const thirdParty = businesses.find((party) => String(party.id) === invoice.thirdPartyId && party.isThirdParty)
       if (!thirdParty || !thirdParty.branches.some((branch) => String(branch.id) === invoice.thirdPartyBranchId)) {
         throw new Error(`Select a valid third party and branch for invoice ${invoiceIndex + 1}.`)
       }
@@ -129,11 +123,13 @@ export const shippingBillMockService = {
     for (const bill of shippingBillService.getInitialBills()) combined.set(bill.id, bill)
     for (const bill of localBills) combined.set(bill.id, bill)
 
-    return delay(Array.from(combined.values()).sort((a, b) => {
-      const timeA = Date.parse(a.updated || '') || 0
-      const timeB = Date.parse(b.updated || '') || 0
-      return timeB - timeA
-    }))
+    return delay(
+      Array.from(combined.values()).sort((a, b) => {
+        const timeA = Date.parse(a.updated || '') || 0
+        const timeB = Date.parse(b.updated || '') || 0
+        return timeB - timeA
+      })
+    )
   },
 
   async getById(id: string | number): Promise<SavedBill | undefined> {
