@@ -14,6 +14,14 @@ function delay<T>(value: T, ms = MOCK_DELAY_MS): Promise<T> {
 
 export const partyMockService = {
   /**
+   * Fetch the party directory used to resolve selected parties and their branches.
+   */
+  async getDirectory(): Promise<{ exporters: Exporter[]; businesses: Business[] }> {
+    const { exporters, businesses } = getDemoData()
+    return delay({ exporters, businesses })
+  },
+
+  /**
    * Save an exporter through the mock service boundary.
    */
   async saveExporter(
