@@ -19,6 +19,10 @@ If the repository has already been cloned without submodules, run:
 git submodule update --init --recursive
 ```
 
+## Verification
+
+GitHub Actions runs the production build and lint check on pushes to `main` and this refactor branch, and on pull requests targeting `main`.
+
 ## Useful commands
 
 ```bash
