@@ -63,9 +63,13 @@ export const shippingBillMockService = {
     return delay(localBill ?? shippingBillService.getById(id), 100)
   },
 
-  async submit(values: ShippingBillFormValues, id?: number): Promise<SavedBill> {
+  async saveDraft(values: ShippingBillFormValues, id?: number): Promise<SavedBill> {
     await delay(undefined)
-    validateSubmission(values)
     return saveBill(values, id)
+  },
+
+  async submit(values: ShippingBillFormValues, id?: number): Promise<SavedBill> {
+    validateSubmission(values)
+    return this.saveDraft(values, id)
   }
 }
