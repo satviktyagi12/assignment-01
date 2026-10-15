@@ -19,7 +19,8 @@ export const partyMockService = {
   async saveExporter(
     exporter: Parameters<typeof persistExporter>[0]
   ): Promise<Exporter> {
-    return delay(persistExporter(exporter))
+    await delay(undefined)
+    return persistExporter(exporter)
   },
 
   /**
@@ -28,7 +29,8 @@ export const partyMockService = {
   async saveBusiness(
     business: Parameters<typeof persistBusiness>[0]
   ): Promise<Business> {
-    return delay(persistBusiness(business))
+    await delay(undefined)
+    return persistBusiness(business)
   },
 
   /**
@@ -39,7 +41,8 @@ export const partyMockService = {
     ownerId: number,
     branch: Parameters<typeof persistBranch>[2]
   ): Promise<Branch> {
-    return delay(persistBranch(kind, ownerId, branch))
+    await delay(undefined)
+    return persistBranch(kind, ownerId, branch)
   },
 
   /**
