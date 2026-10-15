@@ -38,13 +38,13 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Format changed assignment files
+      - name: Format repository
         run: |
-          pnpm exec prettier --write README.md .github/workflows/verify.yml src/dashboard/list-dashboard.tsx src/shipping-bills/form-options-mock-service.ts src/shipping-bills/party-dialogs.tsx src/shipping-bills/party-mock-service.ts src/shipping-bills/shipping-bill-form.tsx src/shipping-bills/shipping-bill-mock-service.ts src/shipping-bills/shipping-bill-validation.ts
+          pnpm exec prettier . --write --cache --cache-strategy metadata
           if ! git diff --quiet; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add README.md .github/workflows/verify.yml src/dashboard/list-dashboard.tsx src/shipping-bills/form-options-mock-service.ts src/shipping-bills/party-dialogs.tsx src/shipping-bills/party-mock-service.ts src/shipping-bills/shipping-bill-form.tsx src/shipping-bills/shipping-bill-mock-service.ts src/shipping-bills/shipping-bill-validation.ts
+            git add -A
             git commit -m "Format assignment implementation"
             git push
           fi
