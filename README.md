@@ -21,7 +21,7 @@ git submodule update --init --recursive
 
 ## Verification
 
-GitHub Actions runs the production build and lint check on pushes to `main` and this refactor branch, and on pull requests targeting `main`. The workflow formats the changed implementation files before running the lint check.
+GitHub Actions installs dependencies from the lockfile, builds the production app, checks formatting, and runs the lint/type-check pipeline on pushes to `main` and this refactor branch, and on pull requests targeting `main`.
 
 ## Useful commands
 
@@ -52,4 +52,4 @@ Local storage is used to keep demo changes between reloads in the current browse
 
 ## AI Usage & Approach
 
-**Tool:** ChatGPT. **Use:** Assisted with architecture review and targeted implementation. **Judgment:** Kept the existing stack, avoided new dependencies, and separated reference data, validation, and mock service responsibilities. **Validation:** Reviewed the changes against the assignment requirements; run the build and lint commands above before submission.
+**Tool:** ChatGPT. **Use:** Assisted with architecture review and targeted implementation. **Judgment:** Kept the existing stack, avoided new dependencies, and separated reference data, validation, and mock service responsibilities. **Validation:** The production build, formatting check, TypeScript check, and ESLint check run in GitHub Actions.
