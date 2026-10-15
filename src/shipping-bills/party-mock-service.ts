@@ -1,4 +1,9 @@
-import { getDemoData } from './demo-store'
+import {
+  getDemoData,
+  saveBranch as persistBranch,
+  saveBusiness as persistBusiness,
+  saveExporter as persistExporter
+} from './demo-store'
 import { Branch, Business, Exporter, loadingPorts, PortOption, ports } from './model'
 
 const MOCK_DELAY_MS = 250
@@ -8,6 +13,35 @@ function delay<T>(value: T, ms = MOCK_DELAY_MS): Promise<T> {
 }
 
 export const partyMockService = {
+  /**
+   * Save an exporter through the mock service boundary.
+   */
+  async saveExporter(
+    exporter: Parameters<typeof persistExporter>[0]
+  ): Promise<Exporter> {
+    return delay(persistExporter(exporter))
+  },
+
+  /**
+   * Save a business through the mock service boundary.
+   */
+  async saveBusiness(
+    business: Parameters<typeof persistBusiness>[0]
+  ): Promise<Business> {
+    return delay(persistBusiness(business))
+  },
+
+  /**
+   * Save a party branch through the mock service boundary.
+   */
+  async saveBranch(
+    kind: 'exporter' | 'business',
+    ownerId: number,
+    branch: Parameters<typeof persistBranch>[2]
+  ): Promise<Branch> {
+    return delay(persistBranch(kind, ownerId, branch))
+  },
+
   /**
    * Search Exporters by name or IEC
    */
