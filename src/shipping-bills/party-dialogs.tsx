@@ -1,4 +1,4 @@
-import { saveBranch, saveBusiness, saveExporter } from '@/shipping-bills/demo-store'
+import { partyMockService } from '@/shipping-bills/party-mock-service'
 import { Branch, Business, countries, Exporter } from '@/shipping-bills/model'
 import { InferType, s, useForm } from 'core/form'
 import { Form, SubmitButton } from 'core/form/components'
@@ -71,7 +71,7 @@ export function PartyDialog({ kind, party, initialRole, onClose, onSaved }: Part
   })
   const { register } = formCtx.hooks
 
-  function handleSave(values: PartyFields) {
+  async function handleSave(values: PartyFields) {
     const firstBranch = isNew
       ? {
           branchName: values.branchName!,
@@ -84,7 +84,7 @@ export function PartyDialog({ kind, party, initialRole, onClose, onSaved }: Part
       : undefined
     const saved =
       kind === 'exporter'
-        ? saveExporter({
+        ? await partyMockService.saveExporter({
             id: party?.id,
             name: values.name.trim(),
             iec: values.iec?.trim() ?? '',
@@ -97,7 +97,7 @@ export function PartyDialog({ kind, party, initialRole, onClose, onSaved }: Part
             notes: values.notes,
             firstBranch
           })
-        : saveBusiness({
+        : await partyMockService.saveBusiness({
             id: party?.id,
             name: values.name.trim(),
             iec: values.iec,
@@ -247,8 +247,8 @@ export function BranchDialog({ kind, ownerId, branch, onClose, onSaved }: Branch
   })
   const { register } = formCtx.hooks
 
-  function handleSave(values: BranchFields) {
-    const saved = saveBranch(kind, ownerId, { ...values, id: branch?.id })
+  async function handleSave(values: BranchFields) {
+    const saved = await partyMockService.saveBranch(kind, ownerId, { ...values, id: branch?.id })
     toast.success('Branch saved')
     onSaved?.(saved)
     onClose()
