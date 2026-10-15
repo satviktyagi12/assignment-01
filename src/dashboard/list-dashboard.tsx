@@ -91,7 +91,7 @@ export default function ListDashboard() {
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={fetchBills} disabled={isLoading}>
-            {isLoading ? 'Syncing...' : 'Sync from API'}
+            {isLoading ? 'Syncing...' : 'Refresh bills'}
           </Button>
           <Button onClick={() => navigate(routes.shippingBillNew)}>+ New shipping bill</Button>
         </div>
@@ -107,13 +107,13 @@ export default function ListDashboard() {
         <Card>
           <CardContent className="pt-5">
             <p className="text-xs text-gray-500">Exporters</p>
-            <p className="mt-1 text-2xl font-semibold">{uniqueExportersCount || 1}</p>
+            <p className="mt-1 text-2xl font-semibold">{uniqueExportersCount}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-5">
             <p className="text-xs text-gray-500">Businesses / Consignees</p>
-            <p className="mt-1 text-2xl font-semibold">{uniqueConsigneesCount || 1}</p>
+            <p className="mt-1 text-2xl font-semibold">{uniqueConsigneesCount}</p>
           </CardContent>
         </Card>
       </div>
@@ -146,7 +146,7 @@ export default function ListDashboard() {
             <div role="status" className="rounded-lg border border-gray-200 p-10 text-center text-sm text-gray-500">
               Loading shipping bills...
             </div>
-          ) : filtered.length ? (
+          ) : loadError && bills.length === 0 ? null : filtered.length ? (
             <Table>
               <thead>
                 <tr>
