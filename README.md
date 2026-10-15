@@ -21,7 +21,7 @@ git submodule update --init --recursive
 
 ## Verification
 
-GitHub Actions runs the production build and lint check on pushes to `main` and this refactor branch, and on pull requests targeting `main`.
+GitHub Actions runs the production build and lint check on pushes to `main` and this refactor branch, and on pull requests targeting `main`. The workflow formats the changed implementation files before running the lint check.
 
 ## Useful commands
 
