@@ -31,6 +31,8 @@ export interface FormOptionData {
   igstPaymentOptions: { value: string; label: string }[]
   accessoryStatusOptions: { value: string; label: string }[]
   goodsSourceOptions: { value: string; label: string }[]
+  containerSizes: { value: string; label: string }[]
+  containerSealTypes: { value: number; label: string }[]
 }
 
 const MOCK_DELAY_MS = 200
@@ -67,6 +69,18 @@ const goodsSourceOptions = [
   { value: 'D', label: 'Indigenous' }
 ]
 
+const containerSizes = [
+  { value: '20', label: '20 ft' },
+  { value: '40', label: '40 ft' },
+  { value: '45', label: '45 ft' }
+]
+
+const containerSealTypes = [
+  { value: 1, label: 'BTSL - Bottle Seal' },
+  { value: 2, label: 'ESEAL - Electronic Seal' },
+  { value: 3, label: 'RFID - Radio Frequency Identifier' }
+]
+
 /**
  * Asynchronous boundary for reference data used by the Shipping Bill form.
  * Replace this mock implementation with an API request when a backend is available.
@@ -90,7 +104,9 @@ export const formOptionsMockService = {
       nfeiCategories,
       igstPaymentOptions,
       accessoryStatusOptions,
-      goodsSourceOptions
+      goodsSourceOptions,
+      containerSizes,
+      containerSealTypes
     })
   }
 }
