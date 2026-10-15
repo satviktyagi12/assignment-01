@@ -1,7 +1,7 @@
 import { BranchDialog, PartyDialog } from './party-dialogs'
 import { routes } from '@/shared/route-paths'
 import { useFieldArray, useForm } from 'core/form'
-import { Form, SubmitButton } from 'core/form/components'
+import { Form } from 'core/form/components'
 import { navigate, useParams } from 'core/routing'
 import { toast } from 'core/toast-manager'
 import { RrCaretDown } from 'icons/rr/fi-rr-caret-down'
