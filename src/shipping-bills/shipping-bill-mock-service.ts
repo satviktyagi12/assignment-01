@@ -58,18 +58,14 @@ export const shippingBillMockService = {
     }))
   },
 
-  async getById(id: string | number): Promise<SavedBill | undefined> {
-    const localBill = getDemoData().bills.find((bill) => String(bill.id) === String(id))
-    return delay(localBill ?? shippingBillService.getById(id), 100)
-  },
-
   async saveDraft(values: ShippingBillFormValues, id?: number): Promise<SavedBill> {
     await delay(undefined)
     return saveBill(values, id)
   },
 
   async submit(values: ShippingBillFormValues, id?: number): Promise<SavedBill> {
+    await delay(undefined)
     validateSubmission(values)
-    return this.saveDraft(values, id)
+    return saveBill(values, id)
   }
 }
