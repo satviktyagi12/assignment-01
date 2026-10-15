@@ -160,6 +160,7 @@ function AsyncPartySelect({
   const [query, setQuery] = useState('')
   const [options, setOptions] = useState<AsyncOption[]>([])
   const [loading, setLoading] = useState(false)
+  const [optionsError, setOptionsError] = useState(false)
   const [selectedLabel, setSelectedLabel] = useState('')
   const [isOpen, setIsOpen] = useState(false)
 
@@ -195,18 +196,21 @@ function AsyncPartySelect({
 
     let active = true
     setLoading(true)
+    setOptionsError(false)
     const timer = setTimeout(() => {
       void fetchOptionsRef
         .current(query)
         .then((results) => {
           if (active) {
             setOptions(results)
+            setOptionsError(false)
             setLoading(false)
           }
         })
         .catch(() => {
           if (active) {
             setOptions([])
+            setOptionsError(true)
             setLoading(false)
           }
         })
@@ -253,7 +257,9 @@ function AsyncPartySelect({
           </div>
           <div className="max-h-56 overflow-y-auto p-1">
             {loading ? (
-              <div className="p-3 text-center text-xs text-gray-500">Searching mock service...</div>
+              <div role="status" className="p-3 text-center text-xs text-gray-500">Searching mock service...</div>
+            ) : optionsError ? (
+              <div role="alert" className="p-3 text-center text-xs text-red-600">Unable to load options. Change the search or try again.</div>
             ) : options.length === 0 ? (
               <div className="p-3 text-center text-xs text-gray-400">No matching results found</div>
             ) : (
