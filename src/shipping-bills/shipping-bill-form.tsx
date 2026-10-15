@@ -1164,7 +1164,6 @@ function BillEditor({ bill }: { bill?: SavedBill }) {
 
   useEffect(() => {
     if (!formState.submitCount || !Object.keys(formState.errors).length) return
-    console.log('Form validation errors on submit:', formState.errors)
     toast.error('Please check the required fields')
     if (
       [
