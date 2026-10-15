@@ -86,7 +86,9 @@ function validateSubmission(values: ShippingBillFormValues) {
     }
     for (const [itemIndex, item] of invoice.items.entries()) {
       if (!item.ritcCode.trim() || !item.goodsDescription1.trim()) {
-        throw new Error(`Enter an HS / RITC code and goods description for item ${itemIndex + 1} in invoice ${invoiceIndex + 1}.`)
+        throw new Error(
+          `Enter an HS / RITC code and goods description for item ${itemIndex + 1} in invoice ${invoiceIndex + 1}.`
+        )
       }
       if (!Number.isFinite(Number(item.quantity)) || Number(item.quantity) <= 0) {
         throw new Error(`Enter a quantity above zero for item ${itemIndex + 1} in invoice ${invoiceIndex + 1}.`)
@@ -99,8 +101,13 @@ function validateSubmission(values: ShippingBillFormValues) {
         const itemThirdParty = businesses.find(
           (party) => String(party.id) === item.itemThirdPartyId && party.isThirdParty
         )
-        if (!itemThirdParty || !itemThirdParty.branches.some((branch) => String(branch.id) === item.itemThirdPartyBranchId)) {
-          throw new Error(`Select a valid third party and branch for item ${itemIndex + 1} in invoice ${invoiceIndex + 1}.`)
+        if (
+          !itemThirdParty ||
+          !itemThirdParty.branches.some((branch) => String(branch.id) === item.itemThirdPartyBranchId)
+        ) {
+          throw new Error(
+            `Select a valid third party and branch for item ${itemIndex + 1} in invoice ${invoiceIndex + 1}.`
+          )
         }
       }
     }
