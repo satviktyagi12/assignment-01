@@ -21,7 +21,6 @@ import { useDemoData } from './demo-store'
 import { shippingBillMockService } from './shipping-bill-mock-service'
 import { formOptionsMockService } from './form-options-mock-service'
 import type { FormOptionData } from './form-options-mock-service'
-import { shippingBillService } from './shipping-bill-service'
 import { billSchema } from './shipping-bill-validation'
 import { getMarksAndNumbersOptions, MarksAndNumbersOption } from './marks-and-numbers-source'
 import {
@@ -1749,14 +1748,74 @@ function BillEditor({ bill }: { bill?: SavedBill }) {
 
 export default function ShippingBillPage() {
   const { id } = useParams<{ id?: string }>()
-  const { bills } = useDemoData()
-  const bill = id ? (bills.find((item) => item.id === Number(id)) || shippingBillService.getById(id)) : undefined
-  if (id && !bill)
+  const [bill, setBill] = useState<SavedBill | undefined>()
+  const [isLoading, setIsLoading] = useState(Boolean(id))
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [reloadCount, setReloadCount] = useState(0)
+
+  useEffect(() => {
+    let active = true
+
+    async function loadBill() {
+      if (!id) {
+        setBill(undefined)
+        setLoadError(null)
+        setIsLoading(false)
+        return
+      }
+
+      setIsLoading(true)
+      setLoadError(null)
+
+      try {
+        const result = await shippingBillMockService.getById(id)
+        if (active) setBill(result)
+      } catch (error) {
+        if (active) {
+          setLoadError(error instanceof Error ? error.message : 'Unable to load this shipping bill.')
+        }
+      } finally {
+        if (active) setIsLoading(false)
+      }
+    }
+
+    void loadBill()
+    return () => {
+      active = false
+    }
+  }, [id, reloadCount])
+
+  if (isLoading) {
+    return (
+      <div role="status" className="rounded-lg border border-gray-200 p-10 text-center text-sm text-gray-500">
+        Loading shipping bill...
+      </div>
+    )
+  }
+
+  if (loadError) {
+    return (
+      <div role="alert" className="rounded-lg border border-red-200 bg-red-50 p-6 text-sm text-red-800">
+        <p className="font-medium">Shipping bill could not be loaded.</p>
+        <p className="mt-1">{loadError}</p>
+        <div className="mt-3 flex gap-2">
+          <Button variant="outline" onClick={() => setReloadCount((count) => count + 1)}>
+            Try again
+          </Button>
+          <Button onClick={() => navigate(routes.dashboard)}>Back to list</Button>
+        </div>
+      </div>
+    )
+  }
+
+  if (id && !bill) {
     return (
       <div className="space-y-3">
         <h1 className="text-xl font-semibold">Shipping bill not found</h1>
         <Button onClick={() => navigate(routes.dashboard)}>Back to list</Button>
       </div>
     )
+  }
+
   return <BillEditor key={id ?? 'new'} bill={bill} />
 }
