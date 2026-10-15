@@ -168,9 +168,13 @@ function AsyncPartySelect({
     let active = true
     if (value) {
       if (getInitialLabelRef.current) {
-        void getInitialLabelRef.current(String(value)).then((lbl) => {
-          if (active && lbl) setSelectedLabel(lbl)
-        })
+        void getInitialLabelRef.current(String(value))
+          .then((label) => {
+            if (active && label) setSelectedLabel(label)
+          })
+          .catch(() => {
+            if (active) setSelectedLabel(String(value))
+          })
       } else {
         const found = options.find((o) => o.value === String(value))
         if (found) setSelectedLabel(found.label)
