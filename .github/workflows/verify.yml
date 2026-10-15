@@ -38,16 +38,8 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Format repository
-        run: |
-          pnpm exec prettier . --write --cache --cache-strategy metadata
-          if ! git diff --quiet; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add -A
-            git commit -m "Format assignment implementation"
-            git push
-          fi
+      - name: Check formatting
+        run: pnpm exec prettier . --check --cache --cache-strategy metadata
 
       - name: Lint check
         run: pnpm lint-check
