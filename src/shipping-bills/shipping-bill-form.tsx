@@ -1219,8 +1219,14 @@ function BillEditor({ bill }: { bill?: SavedBill }) {
       setValue('consigneeId', String(party.id))
       setValue('consigneeBranchId', String(branchId))
     } else if (quickAdd.role === 'itemThirdParty' && quickAdd.invoiceIndex != null && quickAdd.itemIndex != null) {
-      setValue(`invoices.${quickAdd.invoiceIndex}.items.${quickAdd.itemIndex}.itemThirdPartyId` as any, String(party.id) as any)
-      setValue(`invoices.${quickAdd.invoiceIndex}.items.${quickAdd.itemIndex}.itemThirdPartyBranchId` as any, String(branchId) as any)
+      setValue(
+        `invoices.${quickAdd.invoiceIndex}.items.${quickAdd.itemIndex}.itemThirdPartyId` as any,
+        String(party.id) as any
+      )
+      setValue(
+        `invoices.${quickAdd.invoiceIndex}.items.${quickAdd.itemIndex}.itemThirdPartyBranchId` as any,
+        String(branchId) as any
+      )
     } else if (quickAdd.invoiceIndex != null) {
       const field = quickAdd.role === 'buyer' ? 'buyer' : 'thirdParty'
       setValue(`invoices.${quickAdd.invoiceIndex}.${field}Id` as any, String(party.id) as any)
