@@ -25,6 +25,35 @@ function validateSubmission(values: ShippingBillFormValues) {
   if (!values.loadingPort || !values.finalDestinationPort) {
     throw new Error('Select both the loading port and final destination.')
   }
+
+  const grossWeight = values.grossWeight?.trim() ? Number(values.grossWeight) : undefined
+  const netWeight = values.netWeight?.trim() ? Number(values.netWeight) : undefined
+  if (grossWeight !== undefined && (!Number.isFinite(grossWeight) || grossWeight < 0)) {
+    throw new Error('Gross weight must be a non-negative number.')
+  }
+  if (netWeight !== undefined && (!Number.isFinite(netWeight) || netWeight < 0)) {
+    throw new Error('Net weight must be a non-negative number.')
+  }
+  if (grossWeight !== undefined && netWeight !== undefined && netWeight > grossWeight) {
+    throw new Error('Net weight cannot exceed gross weight.')
+  }
+
+  for (const [rangeIndex, range] of values.packingRanges.entries()) {
+    const from = range.packingNumberFrom.trim() ? Number(range.packingNumberFrom) : undefined
+    const to = range.packingNumberTo.trim() ? Number(range.packingNumberTo) : undefined
+    if ((from === undefined) !== (to === undefined)) {
+      throw new Error(`Enter both ends of packing range ${rangeIndex + 1}.`)
+    }
+    if (from !== undefined && to !== undefined) {
+      if (!Number.isInteger(from) || !Number.isInteger(to) || from < 1 || to < 1) {
+        throw new Error(`Packing range ${rangeIndex + 1} must use positive whole numbers.`)
+      }
+      if (from > to) {
+        throw new Error(`Packing range ${rangeIndex + 1} must start at or before it ends.`)
+      }
+    }
+  }
+
   if (!values.invoices.length) {
     throw new Error('Add at least one invoice.')
   }
